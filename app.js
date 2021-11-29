@@ -10,11 +10,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 const port = 3000
 
-app.post('/merkleproof', async (req, res) => {
+app.post('/season', async (req, res) => {
   const seasonID = req.body['season_id']
   const startRelease = req.body['startReleaseTimestamp']
   const rewards = parseRewards(req.body['claims'])
-  const provider = new ethers.providers.JsonRpcProvider('https://data-seed-prebsc-1-s1.binance.org:8545/')
+  const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_RPC)
   var wallet = new ethers.Wallet(process.env.SECRET, provider)
   var contract = new ethers.Contract(process.env.SC_ADDRESS, abi, wallet)
   await contract.functions.addSeason(seasonID,startRelease,rewards['merkleRoot'])
