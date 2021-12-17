@@ -26,18 +26,17 @@ module.exports.parseRewards = function (rewardInfo) {
     // hash tree elements to leaves
     const leaves = hashElements(treeElements);
     const tree = new MerkleTree(leaves, keccak256, {sort: true});
-    const userRewardsWithProof = treeElements.reduce((memo, {account, amount}, index) => {
+    const userRewardsWithProof = treeElements.reduce((memo, {account, ...amount}, index) => {
         memo[account] = {
             index,
-            amount: amount.toHexString(),
+            dorAmount: amount.dorAmount.toHexString(),
+            goldAmount: amount.goldAmount.toHexString(),
             proof: tree.getHexProof(leaves[index]),
         };
         return memo;
     }, {});
-    const tokenTotal = treeElements.reduce((memo, {amount}) => memo.add(amount), BN.from(0));
     return {
         merkleRoot: tree.getHexRoot(),
-        tokenTotal: tokenTotal.toHexString(),
         claims: userRewardsWithProof,
     };
 };
@@ -49,9 +48,11 @@ function verifyAddressAndAmounts(claims) {
         }
         const parsedAddress = ethers.utils.getAddress(account);
         if (memo[parsedAddress]) throw new Error(`[CTR] Duplicate address: ${parsed}`);
-        const parsedTokenAmounts = BN.from(claims[account]);
+        const parsedDorAmounts = BN.from(claims[account].dorAmount);
+        const parsedGoldAmounts = BN.from(claims[account].goldAmount);
         memo[parsedAddress] = {
-            amount: parsedTokenAmounts,
+            dorAmount: parsedDorAmounts,
+            goldAmount: parsedGoldAmounts
         };
         return memo;
     }, {});
@@ -60,12 +61,13 @@ function verifyAddressAndAmounts(claims) {
 function addAccountInMapping(mappedTokensAmounts) {
     return Object.keys(mappedTokensAmounts).map((account) => ({
         account,
-        amount: mappedTokensAmounts[account].amount,
+        dorAmount: mappedTokensAmounts[account].dorAmount,
+        goldAmount: mappedTokensAmounts[account].goldAmount,
     }));
 }
 
 function hashElements(treeElements) {
-    return treeElements.map((element, index) =>
-        solidityKeccak256(['uint256', 'address', 'uint256'], [index, element.account, element.amount]),
-    );
+    return treeElements.map((element, index) => {
+        return solidityKeccak256(['uint256', 'address', 'uint256', 'uint256'], [index, element.account, element.dorAmount, element.goldAmount])
+    });
 }
