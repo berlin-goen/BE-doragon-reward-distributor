@@ -17,7 +17,11 @@ app.post('/season', async (req, res) => {
   const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_RPC)
   var wallet = new ethers.Wallet(process.env.SECRET, provider)
   var contract = new ethers.Contract(process.env.SC_ADDRESS, abi, wallet)
-  await contract.functions.addSeason(seasonID,startRelease,rewards['merkleRoot'])
+  try {
+    await contract.functions.addSeason(seasonID,startRelease,rewards['merkleRoot'], {gasLimit: 2500000})
+  } catch(e) {
+    return res.status(500).send(e.message)
+  }
   res.send(rewards)
 })
 
