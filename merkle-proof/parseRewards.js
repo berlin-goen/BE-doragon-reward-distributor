@@ -29,8 +29,7 @@ module.exports.parseRewards = function (rewardInfo) {
     const userRewardsWithProof = treeElements.reduce((memo, {account, ...amount}, index) => {
         memo[account] = {
             index,
-            dorAmount: amount.dorAmount.toHexString(),
-            goldAmount: amount.goldAmount.toHexString(),
+            amount: amount.amount.toHexString(),
             proof: tree.getHexProof(leaves[index]),
         };
         return memo;
@@ -48,11 +47,9 @@ function verifyAddressAndAmounts(claims) {
         }
         const parsedAddress = ethers.utils.getAddress(account);
         if (memo[parsedAddress]) throw new Error(`[CTR] Duplicate address: ${parsed}`);
-        const parsedDorAmounts = BN.from(claims[account].dorAmount);
-        const parsedGoldAmounts = BN.from(claims[account].goldAmount);
+        const parsedAmounts = BN.from(claims[account].amount);
         memo[parsedAddress] = {
-            dorAmount: parsedDorAmounts,
-            goldAmount: parsedGoldAmounts
+            amount: parsedAmounts
         };
         return memo;
     }, {});
@@ -61,13 +58,12 @@ function verifyAddressAndAmounts(claims) {
 function addAccountInMapping(mappedTokensAmounts) {
     return Object.keys(mappedTokensAmounts).map((account) => ({
         account,
-        dorAmount: mappedTokensAmounts[account].dorAmount,
-        goldAmount: mappedTokensAmounts[account].goldAmount,
+        amount: mappedTokensAmounts[account].amount
     }));
 }
 
 function hashElements(treeElements) {
     return treeElements.map((element, index) => {
-        return solidityKeccak256(['uint256', 'address', 'uint256', 'uint256'], [index, element.account, element.dorAmount, element.goldAmount])
+        return solidityKeccak256(['uint256', 'address', 'uint256'], [index, element.account, element.amount])
     });
 }

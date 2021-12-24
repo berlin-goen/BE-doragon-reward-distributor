@@ -5,11 +5,6 @@ module.exports = [
                 "internalType": "address",
                 "name": "_dorToken",
                 "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_goldToken",
-                "type": "address"
             }
         ],
         "stateMutability": "nonpayable",
@@ -33,17 +28,30 @@ module.exports = [
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "dorValue",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "goldValue",
+                "name": "value",
                 "type": "uint256"
             }
         ],
         "name": "BatchUnLock",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes32[]",
+                "name": "proof",
+                "type": "bytes32[]"
+            }
+        ],
+        "name": "Debug",
         "type": "event"
     },
     {
@@ -83,13 +91,7 @@ module.exports = [
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "dorValue",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "goldValue",
+                "name": "value",
                 "type": "uint256"
             }
         ],
@@ -99,19 +101,6 @@ module.exports = [
     {
         "inputs": [],
         "name": "DOR",
-        "outputs": [
-            {
-                "internalType": "contract IERC20",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "GOLD",
         "outputs": [
             {
                 "internalType": "contract IERC20",
@@ -168,11 +157,6 @@ module.exports = [
                 "type": "uint256[]"
             },
             {
-                "internalType": "uint256[]",
-                "name": "_goldAmounts",
-                "type": "uint256[]"
-            },
-            {
                 "internalType": "uint32[]",
                 "name": "proofLengths",
                 "type": "uint32[]"
@@ -225,6 +209,35 @@ module.exports = [
                 "internalType": "uint8[]",
                 "name": "",
                 "type": "uint8[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32[]",
+                "name": "_merkleProofs",
+                "type": "bytes32[]"
+            },
+            {
+                "internalType": "uint128",
+                "name": "startIndex",
+                "type": "uint128"
+            },
+            {
+                "internalType": "uint32",
+                "name": "length",
+                "type": "uint32"
+            }
+        ],
+        "name": "getMerkleProofWithIndex",
+        "outputs": [
+            {
+                "internalType": "bytes32[]",
+                "name": "",
+                "type": "bytes32[]"
             }
         ],
         "stateMutability": "view",
@@ -321,11 +334,6 @@ module.exports = [
             {
                 "internalType": "uint256",
                 "name": "_dorAmount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_goldAmount",
                 "type": "uint256"
             },
             {
